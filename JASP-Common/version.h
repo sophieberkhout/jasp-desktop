@@ -32,7 +32,7 @@ public:
 	bool operator<=(const Version&);
 	bool operator>=(const Version&);
 	bool operator==(const Version&);
-	bool operator!=(const Version&);
+	bool operator!=(const Version&) const;
 
 	bool isRelease() const;
 	bool isAlpha() const;

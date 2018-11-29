@@ -134,7 +134,7 @@ bool Version::operator==(const Version& version)
 	return this->major == version.major && this->minor == version.minor && this->revision == version.revision && this->build == version.build;
 }
 
-bool Version::operator!=(const Version& version)
+bool Version::operator!=(const Version& version) const
 {
 	return this->major != version.major || this->minor != version.minor || this->revision != version.revision || this->build != version.build;
 }

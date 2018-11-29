@@ -238,6 +238,10 @@ private:
 	QSettings						_settings;
 	CustomWebEnginePage				*_customPage;
 	QApplication					*_application = nullptr;
+
+	void							_analysisSaveImageHandler(Analysis* analysis, QString options);
+	Analysis*						_analysisToRefresh = NULL;
+	QString							_saveImageOptions;
 };
 
 #endif // MAINWIDGET_H

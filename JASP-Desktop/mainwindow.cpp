@@ -633,8 +633,6 @@ void MainWindow::packageDataChanged(DataSetPackage *package,
 }
 
 
-
-
 void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 {
 	static bool showInstructions = true;
@@ -671,6 +669,14 @@ void MainWindow::analysisResultsChangedHandler(Analysis *analysis)
 
 	if(resultXmlCompare::compareResults::theOne()->testMode())
 		analysesForComparingDoneAlready();
+
+	if (_analysisToRefresh && analysis->status() == Analysis::Complete)
+	{
+		_analysisSaveImageHandler(_analysisToRefresh, _saveImageOptions);
+		_analysisToRefresh = NULL;
+		_saveImageOptions.clear();
+	}
+
 }
 
 void MainWindow::analysisSaveImageHandler(int id, QString options)
@@ -679,6 +685,23 @@ void MainWindow::analysisSaveImageHandler(int id, QString options)
 	if (analysis == NULL)
 		return;
 
+	if (analysis->version() != AppInfo::version)
+	{
+		QMessageBox::StandardButton reply = QMessageBox::warning(this, "Version incompatibility", QString("The JASP version of this analysis is not the same as the current JASP version. To be able to save an image from this analysis you need first to refresh it.\n\nDo you want to refresh this analysis."), QMessageBox::Ok|QMessageBox::Cancel);
+
+		if (reply == QMessageBox::Ok)
+		{
+			_analysisToRefresh = analysis;
+			_saveImageOptions = options;
+			analysis->refresh();
+		}
+	}
+	else
+		_analysisSaveImageHandler(analysis, options);
+}
+
+void MainWindow::_analysisSaveImageHandler(Analysis* analysis, QString options)
+{
 	string utf8 = fq(options);
 	Json::Value root;
 	Json::Reader parser;
