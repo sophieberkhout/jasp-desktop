@@ -71,7 +71,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                       "informativeTLocation", "informativeTScale", "informativeTDf",
                       "priorSE", "inverseGammaShape", "inverseGammaScale",
                       "informativehalfTScale", "informativehalfTDf",
-                      "BFComputation", "iterBridge", "iterMCMC", "chainsMCMC", "seed", "setSeed")
+                      "BFComputation", "iterBridge", "iterMCMC", "chainsMCMC")
 
 # Get dataset
 .bmaReadData <- function(jaspResults, options){
@@ -355,9 +355,6 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   d   <- jaspResults[["bmaPriors"]]$object[["d"]]
   tau <- jaspResults[["bmaPriors"]]$object[["tau"]]
 
-  seed <- NA
-  if (options[["setSeed"]])
-    seed <- options[["seed"]]
   
   # Bayesian meta analysis
   if(options$modelSpecification != "CRE"){
@@ -371,8 +368,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                                   logml   = logml,
                                   logml_iter = logml_iter,
                                   iter     = iter,
-                                  chains = chains,
-                                  seed = seed)
+                                  chains = chains)
     })
   } else {
     p <- try({
@@ -381,7 +377,6 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                                       SE = SE, 
                                       d = d, 
                                       tau = tau,
-                                      seed = seed,
                                       # logml = logml,
                                       # logml_iter = logml_iter,
                                       iter = 10000 # because of an issue with stored variables, it is not yet possible to make it reactive.
@@ -631,7 +626,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
       creBF <- 1/bmaResults[["bf"]]$BF["ordered", "random"]
     }
   }
-  if(options[["bayesFactorType"]] == "logBF10"){
+  if(options[["bayesFactorType"]] == "LogBF10"){
     BF <- log(BF)
     if(options[["modelSpecification"]] == "CRE"){
       creBF <- log(bmaResults[["bf"]]$BF["ordered", "random"])
@@ -662,7 +657,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
   }
   
   if(options$modelSpecification == "CRE"){
-    if(options[["bayesFactorType"]] == "BF01" || options[["bayesFactorType"]] == "logBF10"){
+    if(options[["bayesFactorType"]] == "BF01" || options[["bayesFactorType"]] == "LogBF10"){
       footnoteCREbf <- gettextf("Bayes factor of the ordered effects H%1$s over the fixed effects H%1$s. The Bayes factor for the ordered effects H%1$s versus the unconstrained (random) effects H%1$s model is %2$.3f.", "\u2081", creBF)
     } else if(options[["bayesFactorType"]] == "BF10"){
       footnoteCREbf <-gettextf("Bayes factor of the fixed effects H%1$s over the ordered effects H%1$s. The Bayes factor for the unconstrained (random) effects H%1$s versus the ordered effects H%1$s model is %2$.3f.", "\u2081", creBF)
@@ -1122,7 +1117,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     if(options[["bayesFactorType"]] == "BF01") {
       BF    <- 1/BF
       bfType <- "BF01"
-    } else if(options[["bayesFactorType"]] == "logBF10") {
+    } else if(options[["bayesFactorType"]] == "LogBF10") {
       BF <- log(BF)
       bfType <- "LogBF10"
     } else {
@@ -1609,7 +1604,7 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
     BFs    <- 1/BFs
     bfType <- "BF01"
     yName <- "BF[italic(fr)]"
-  } else if(options$bayesFactorType == "logBF10") {
+  } else if(options$bayesFactorType == "LogBF10") {
     bfType <- "LogBF10"
   } else {
     bfType <- "BF10" 
@@ -1655,8 +1650,8 @@ BayesianMetaAnalysis <- function(jaspResults, dataset, options) {
                                                  pizzaTxt = pizzaTxt,
                                                  hasRightAxis = TRUE,
                                                  yName = yName,
-                                                 addEvidenceArrowText = FALSE,
-                                                 evidenceLeveltxt = FALSE
+                                                 evidenceTxt  = paste('Evidence for r', H[1], ':'),
+                                                 arrowLabel  = c("Evidence~'for f'~H[1]", "Evidence~'for r'~H[1]")
                                                  )
   }
   
